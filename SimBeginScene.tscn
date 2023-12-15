@@ -1,7 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://b8l2pubtwyukv"]
+[gd_scene load_steps=11 format=3 uid="uid://b8l2pubtwyukv"]
 
 [ext_resource type="Script" path="res://SimBeginScene.cs" id="1_anio2"]
 [ext_resource type="Texture2D" uid="uid://7chtiesavrye" path="res://Textures/1687551923-435274-name-1m-x-1m.png" id="2_nvapx"]
+[ext_resource type="PackedScene" uid="uid://dgxwvehspcn4u" path="res://Models381/SpringModel.tscn" id="3_gdd30"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_3rkpu"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -27,8 +28,8 @@ size = Vector2(4, 4)
 size = Vector3(0.2, 0.2, 0.2)
 
 [sub_resource type="SphereMesh" id="SphereMesh_rx303"]
-radius = 0.1
-height = 0.1
+radius = 0.15
+height = 0.23
 
 [node name="SimBeginScene" type="Node3D"]
 script = ExtResource("1_anio2")
@@ -41,6 +42,7 @@ shadow_enabled = true
 environment = SubResource("Environment_ykp7v")
 
 [node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.31063, 0)
 mesh = SubResource("PlaneMesh_d3k55")
 
 [node name="Anchor" type="MeshInstance3D" parent="."]
@@ -50,6 +52,29 @@ mesh = SubResource("BoxMesh_vnab4")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.067205, 0.310339, -0.209228)
 mesh = SubResource("SphereMesh_rx303")
 
+[node name="SpringModel" parent="." instance=ExtResource("3_gdd30")]
+
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(0.991631, 0.0388422, -0.123119, -0.0478827, 0.996302, -0.071341, 0.119893, 0.0766392, 0.989824, -0.0909984, 0.280722, 1.24292)
+transform = Transform3D(0.973522, 0.0625322, 0.219875, -0.0478827, 0.996302, -0.0713409, -0.223523, 0.0589238, 0.972916, 0.819826, 0.280722, 2.59992)
 fov = 87.1875
+
+[node name="peLabel" type="Label" parent="."]
+offset_left = 25.0
+offset_top = 16.0
+offset_right = 93.0
+offset_bottom = 39.0
+text = "keLabel"
+
+[node name="keLabel" type="Label" parent="."]
+offset_left = 26.0
+offset_top = 42.0
+offset_right = 84.0
+offset_bottom = 68.0
+text = "peLabel"
+
+[node name="ergLabel" type="Label" parent="."]
+offset_left = 20.0
+offset_top = 63.0
+offset_right = 60.0
+offset_bottom = 86.0
+text = "ergLabel"

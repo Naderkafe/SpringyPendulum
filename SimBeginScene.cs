@@ -1,56 +1,128 @@
 using Godot;
+
 using System;
+
+using System.IO;
 
 public partial class SimBeginScene : Node3D
 {
 
-	MeshInstance3D anchor;
-	MeshInstance3D ball;
-	double xA, yA, zA; // coords of anchor
-	float length; // length of pendulum
-	double angle; // pendulum angle
-	double angleInit; // initial pendulum angle
-	double time;
+    MeshInstance3D anchor;
 
-	Vector3 endA;	// end point of anchor
-	Vector3 endB;	// end poit for pendulum ball
-	
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
-	{
-		GD.Print("Hello MEE 381 in Godot!");
-		xA = 0.0; yA = 1.2; zA = 0.0;
-		anchor = GetNode<MeshInstance3D>("Anchor");
-		ball = GetNode<MeshInstance3D>("Ball1");
-		endA = new Vector3((float)xA, (float)yA, (float)zA);
-		anchor.Position = endA;
-		
-		length = 0.9f;
-		angleInit = Mathf.DegToRad (60.0);
-		float angleF = (float)angleInit;
-		endB.X = endA.X + length*Mathf.Sin(angleF);
-		endB.Y = endA.Y - length*Mathf.Cos(angleF);
-		endB.Z = endA.Z;
-		PlacePendulum(endB);
-		//PlacePendulum((float)angle);
+    MeshInstance3D ball;
 
-		time = 0.0;
-	}
+    SpringModel spring;
 
+    Label potentialEnergyLabel;
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-		float angleF = (float)Math.Sin(3.0 * time);
-		endB.X = endA.X + length*Mathf.Sin(angleF);
-		endB.Y = endA.Y - length*Mathf.Cos(angleF);
-		endB.Z = endA.Z;
-		PlacePendulum(endB);
-		time += delta;
-	}
+    Label kineticEnergyLabel;
 
-	private void PlacePendulum(Vector3 endBB)
-	{
-		ball.Position = endBB;
-	}
+    Label totalEnergyLabel;
+
+    PendSim pend = new PendSim();
+
+    double xA, yA, zA; // coords of anchor
+
+    float length0; // natural length of pendulum
+
+    float length; // length of pendulum
+
+    double time;
+
+    Vector3 endA; // end point of anchor
+
+    Vector3 endB; // end point for pendulum bob
+
+    // Called when the node enters the scene tree for the first time.
+
+    public override void _Ready()
+    {
+
+        xA = 0.0; yA = 0.4; zA = 0.0;
+
+        anchor = GetNode<MeshInstance3D>("Anchor");
+
+        ball = GetNode<MeshInstance3D>("Ball1");
+
+        spring = GetNode<SpringModel>("SpringModel");
+
+        endA = new Vector3((float)xA, (float)yA, (float)zA);
+
+        anchor.Position = endA;
+
+        spring.GenMesh(0.05f, 0.015f, 0.9f, 6.0f, 62);
+
+        endB.X = (float)pend.X;
+
+        endB.Y = (float)pend.Y;
+
+        endB.Z = (float)pend.Z;
+
+        potentialEnergyLabel = GetNode<Label>("peLabel");
+
+        kineticEnergyLabel = GetNode<Label>("keLabel");
+
+        totalEnergyLabel = GetNode<Label>("ergLabel");
+
+        PlacePendulum(endB);
+
+        time = 0.0;
+
+    }
+
+    // Called every frame. 'delta' is the elapsed time since the previous frame.
+
+    public override void _Process(double delta)
+    {
+
+        endB.X = (float)pend.X;
+
+        endB.Y = (float)pend.Y;
+
+        endB.Z = (float)pend.Z;
+
+        PlacePendulum(endB);
+
+        time += delta;
+
+        double potentialEnergy = pend.CalculatePotentialEnergy();
+
+        double kineticEnergy = pend.CalculateKineticEnergy();
+
+        double totalEnergy = pend.CalculateTotalEnergy();
+
+        // Update labels
+
+        potentialEnergyLabel.Text = "Potential Energy: " + potentialEnergy.ToString("F2");
+
+        kineticEnergyLabel.Text = "Kinetic Energy: " + kineticEnergy.ToString("F2");
+
+        totalEnergyLabel.Text = "Total Energy: " + totalEnergy.ToString("F2");
+
+    }
+
+    public override void _PhysicsProcess(double delta)
+    {
+
+        base._PhysicsProcess(delta);
+
+        pend.StepRK4(time, delta);
+
+        endB.X = (float)pend.X;
+
+        endB.Y = (float)pend.Y;
+
+        endB.Z = (float)pend.Z;
+
+    }
+
+    private void PlacePendulum(Vector3 endBB)
+    {
+
+        spring.PlaceEndPoints(endA, endB);
+
+        ball.Position = endBB;
+
+    }
+
 }
